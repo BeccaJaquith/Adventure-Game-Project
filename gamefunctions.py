@@ -31,10 +31,11 @@ def purchase_item(itemPrice: float, startingMoney: float, quantityToPurchase: in
         #If we have money left over:
         quantity_purchased = quantityToPurchase
         amount_money_remaining = startingMoney - total_cost
+        
     else:
         #If we can only buy as many as can be afforded (not enough money):
         quantity_purchased = int(startingMoney // itemPrice)
-        amount_money_remaining = startingMoney - quantity_purchased
+        amount_money_remaining = startingMoney - quantity_purchased * itemPrice
           
     #Return the quantity purchased and the amount of money remaining.    
     return (quantity_purchased, amount_money_remaining)
@@ -63,23 +64,23 @@ def new_random_monster():
         {
             'name': 'Goblin',
             'description': 'This goblin is green, five feet tall, and has a hump on there back.',
-            'health_range': random.randint(8, 12),
-            'power_range': random.randint(23, 27),
-            'money_range': random.randint(1, 5)
+            'health': random.randint(8, 12),
+            'power': random.randint(23, 27),
+            'money': random.randint(1, 5)
         },
         {
             'name': 'Mummy',
             'description': 'This mummy is three thousand years old and lives with his mother.',
-            'health_range': random.randint(13, 17),
-            'power_range': random.randint(28, 32),
-            'money_range': random.randint(101, 105)
+            'health': random.randint(13, 17),
+            'power': random.randint(28, 32),
+            'money': random.randint(101, 105)
         },
         {
             'name': 'Vampire',
             'description': 'This vampire is a real narcissist and can\'t stop looking in the mirror.',
-            'health_range': random.randint(18, 22),
-            'power_range': random.randint(33, 37),
-            'money_range': random.randint(201, 205)
+            'health': random.randint(18, 22),
+            'power': random.randint(33, 37),
+            'money': random.randint(201, 205)
         }
     ]
     
@@ -186,27 +187,27 @@ my_monster = new_random_monster()
 
 print(my_monster['name'])
 print(my_monster['description'])
-print(my_monster['health_range'])
-print(my_monster['power_range'])
-print(my_monster['money_range'])
+print(my_monster['health'])
+print(my_monster['power'])
+print(my_monster['money'])
 
 #Run 2
 my_monster = new_random_monster()
 
 print(my_monster['name'])
 print(my_monster['description'])
-print(my_monster['health_range'])
-print(my_monster['power_range'])
-print(my_monster['money_range'])
+print(my_monster['health'])
+print(my_monster['power'])
+print(my_monster['money'])
 
 #Run 3
 my_monster = new_random_monster()
 
 print(my_monster['name'])
 print(my_monster['description'])
-print(my_monster['health_range'])
-print(my_monster['power_range'])
-print(my_monster['money_range'])
+print(my_monster['health'])
+print(my_monster['power'])
+print(my_monster['money'])
 
 
 #Call Function 3 three times.
