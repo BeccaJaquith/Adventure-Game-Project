@@ -1,4 +1,4 @@
-#CSCI 150 Assignment 7 - Adventure Module (Project)
+#CSCI 150 Assignment 8 - Adventure Module (Project)
 #Rebecca Jaquith
 #March 9, 2025
 
