@@ -1,17 +1,34 @@
-#CSCI 150 Assignment 6 - Documention and Strings (Project)
+#CSCI 150 Assignment 7 - Adventure Module (Project)
 #Rebecca Jaquith
-#February 23, 2025
+#March 9, 2025
 
-#In this assignment I will be calling four different functions, three separate times, with three different inputs.
-#The functions are purchase_item(), new_random_monster(), print_welcome(), and print_shop_menu().
+#In this assignment I will be modifying the gamefunctions file so that it can be used as a module from another file and experimenting with importing it by game.py.
+#The existing functions are purchase_item(), new_random_monster(), print_welcome(), and print_shop_menu().
+#The new functions are test_functions() and main().
+
+'''This module provides functions to be imported by the game.py file.
+
+It includes six functions. 1 through 4 are the required game functions.
+Function 1 is purchase_items() and is used to return the number of
+items purchased and the amount of money remaining.
+Function 2 is new_random_monster() and is used to return three random monsters 
+and various properties associated with each monster.
+Function 3 is print_welcome() and is used to print a welcome sign
+for the supplied 'name' parameter.
+Function 4 is print_shop_menu() and is used to print a sign that contains
+a list of two items and their corresponding prices.
+The fifth function down is called test_functions and is used to print
+the output of Functions 1 through 4.
+The sixth function is called main() and is used to test if the function is true
+when gamefunctions is run.
+'''
 
 #Function 1 purchase_item().
 
-'''Call the purchase_item() function to return the the number of items purchased and the amount of money remaining.'''
+'''Call the purchase_item() function to return the number of items purchased and the amount of money remaining.'''
 import random
 
-
-def purchase_item(itemPrice: float, startingMoney: float, quantityToPurchase: int = 1):
+def purchase_item(itemPrice: float, startingMoney: float, quantityToPurchase: int=1):
     '''Calculate the number of items purchased and the amount of money remaining.
     If there isn't enough money, adjust the quantity of items purchased.
 
@@ -94,7 +111,7 @@ def new_random_monster():
 
 #Function 3 print_welcome()
 
-'''Call the print_welcome() function to print a welcome for the supplied 'name' parameter.
+'''Call the print_welcome() function to print a welcome sign for the supplied 'name' parameter.
 The output is centered within a 20-character field.
 '''
 def print_welcome(name:str, width:int = 20):
@@ -119,9 +136,10 @@ def print_welcome(name:str, width:int = 20):
 
 
 
+
 #Function 4 print_shop_menu()
 
-'''Call the print_shop_menu()function to print a sign that contains a list of two items and their corresponding prices.'''
+'''Call the print_shop_menu() function to print a sign that contains a list of two items and their corresponding prices.'''
 def print_shop_menu(item1Name:str, item1Price:float, item2Name:str, item2Price:float):
     '''Print a sign that contains a list of two items and their corresponding prices.
     Items are left-aligned in the menu, while the prices are right aligned (with decimal points lining up).
@@ -154,82 +172,117 @@ def print_shop_menu(item1Name:str, item1Price:float, item2Name:str, item2Price:f
     print(f'\\----------------------/')
     
 
-            
-#Call Function 1 four times. I used the same number of calls and values as the example.
-#Run 1
-num_purchased, leftover_money = purchase_item(1.23, 10, 3)
-
-print(num_purchased)
-print(leftover_money)
-
-#Run 2
-num_purchased, leftover_money = purchase_item(1.23, 2.01, 3)
-
-print(num_purchased)
-print(leftover_money)
-
-#Run 3
-num_purchased, leftover_money = purchase_item(3.41, 21.12)
-
-print(num_purchased)
-print(leftover_money)
-
-#Run 4
-num_purchased, leftover_money = purchase_item(31.41, 21.12)
-
-print(num_purchased)
-print(leftover_money)
 
 
-#Call Function 2 three times.
-#Run 1
-my_monster = new_random_monster()
+#Function test_functions().
 
-print(my_monster['name'])
-print(my_monster['description'])
-print(my_monster['health'])
-print(my_monster['power'])
-print(my_monster['money'])
+'''Call test_functions to print the output of Functions 1 through 4.'''
+def test_functions(): 
+    '''Function test_functions contains the test code for Functions 1 through 4.
 
-#Run 2
-my_monster = new_random_monster()
+    Arguements: 
+    None.
 
-print(my_monster['name'])
-print(my_monster['description'])
-print(my_monster['health'])
-print(my_monster['power'])
-print(my_monster['money'])
+    Return:
+    None.
 
-#Run 3
-my_monster = new_random_monster()
+    '''
 
-print(my_monster['name'])
-print(my_monster['description'])
-print(my_monster['health'])
-print(my_monster['power'])
-print(my_monster['money'])
+    #Call Function 1 four times. I used the same number of calls and values as the example.
+    #Run 1
+    num_purchased, leftover_money = purchase_item(1.23, 10, 3)
+
+    print(num_purchased)
+    print(leftover_money)
+
+    #Run 2
+    num_purchased, leftover_money = purchase_item(1.23, 2.01, 3)
+
+    print(num_purchased)
+    print(leftover_money)
+
+    #Run 3
+    num_purchased, leftover_money = purchase_item(3.41, 21.12)
+
+    print(num_purchased)
+    print(leftover_money)
+
+    #Run 4
+    num_purchased, leftover_money = purchase_item(31.41, 21.12)
+
+    print(num_purchased)
+    print(leftover_money)
 
 
-#Call Function 3 three times.
-#Run 1
-print_welcome("Becca")
+    #Call Function 2 three times.
+    #Run 1
+    my_monster = new_random_monster()
 
-#Run 2
-print_welcome("Miranda")
+    print(my_monster['name'])
+    print(my_monster['description'])
+    print(my_monster['health'])
+    print(my_monster['power'])
+    print(my_monster['money'])
 
-#Run 3
-print_welcome("Rachel")
+    #Run 2
+    my_monster = new_random_monster()
+
+    print(my_monster['name'])
+    print(my_monster['description'])
+    print(my_monster['health'])
+    print(my_monster['power'])
+    print(my_monster['money'])
+
+    #Run 3
+    my_monster = new_random_monster()
+
+    print(my_monster['name'])
+    print(my_monster['description'])
+    print(my_monster['health'])
+    print(my_monster['power'])
+    print(my_monster['money'])
 
 
-#Call Function 3 three times. I used the same values as the example.
-#Run 1
-print_shop_menu("Apple", 31, "Pear", 1.234)
+    #Call Function 3 three times.
+    #Run 1
+    print_welcome("Becca")
 
-#Run 2
-print_shop_menu("Egg", .23, "Bag of Oats", 12.34)
-                
-#Run 3
-print_shop_menu("Cheese", 6.78, "Sandwich", 5.43)
+    #Run 2
+    print_welcome("Miranda")
+
+    #Run 3
+    print_welcome("Rachel")
+
+
+    #Call Function 4 three times. I used the same values as the example.
+    #Run 1
+    print_shop_menu("Apple", 31, "Pear", 1.234)
+
+    #Run 2
+    print_shop_menu("Egg", .23, "Bag of Oats", 12.34)
+                    
+    #Run 3
+    print_shop_menu("Cheese", 6.78, "Sandwich", 5.43)
+
+
+#Function main().
+
+'''Used to test if statement is true, if test_fuctions() is called.'''
+def main():
+    '''This function calls the function test_function().
+
+    Arguments:
+    None.
+
+    Return:
+    None.
+    '''
+
+    #Call test_functions.
+    test_functions()
+
+if __name__ == "__main__":
+    main()
 
 
 
