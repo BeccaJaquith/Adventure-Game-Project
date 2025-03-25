@@ -6,7 +6,7 @@
 '''This module provides functions to be imported by the game.py file.
 '''
 
-import random 
+import random
 
 #Game variables.
 player_HP = 30
