@@ -1,46 +1,58 @@
-#CSCI 150 Assignment 7 - Adventure Module (Project)
+#CSCI 150 Assignment 9 - Game Loops (Project)
 #Rebecca Jaquith
-#March 9, 2025
+#March 23, 2025
 
-'''In this module I will import the gamefunctions.py file and call the 4 required functions.
-The 4 required functions are purchase_item(), new_random_monster(),
-print_welcome(), and print_shop_menu().
+'''In this module I will import the gamefunctions.py file and call various functions.
+The functions, along with the game.py file will allow the user to play a very basic game.
 '''
 
-#Import the gamefunctions module.
 import gamefunctions
+import random
 
-#Demonstration of basic user interaction.
-user_input = input('Enter your name:')
-
-#Call each of the 4 required functions once.
-
-#Call Function 1 using an example from gamefunctions.py.
-from gamefunctions import purchase_item
-
-num_purchased, leftover_money = purchase_item(1.23, 10, 3)
-
-print(num_purchased)
-print(leftover_money)
+#Game variables.
+player_HP = 30
+player_gold = 10
+player_damage = random.randint(5, 10) #The damage the player does.
+monster_HP = random.randint(5, 50)
+monster_damage = random.randint(5, 10) #The damage the monster does.
 
 
-#Call Function 2 using an example from gamefunctions.py.
-from gamefunctions import new_random_monster
+'''Call the main_loop_game to view the town menu and play the game.'''
+def main_game_loop():
+    '''This function allows the user to play the game.
+    
+    Arguments:
+    None.
 
-my_monster = new_random_monster()
+    Return:
+    None.
 
-print(my_monster['name'])
-print(my_monster['description'])
-print(my_monster['health'])
-print(my_monster['power'])
-print(my_monster['money'])
+    '''
+    
+    while True:
+
+        gamefunctions.print_town_menu()
+        
+        user_choice = gamefunctions.user_selection()
+
+        if user_choice == 1: #Leave town and fight monster.
+            
+            gamefunctions.fight_monster()
+
+        elif user_choice == 2: #Sleep and restore HP.
+
+            gamefunctions.sleep()
+
+        elif user_choice == 3: #Quit the game.
+
+            print()
+            print('Thank you for playing the game!')
+            print()
+            break
 
 
-#Call Function 3 using an example from gamefunctions.py.
-gamefunctions.print_welcome("Becca")
+if __name__ == "__main__":
+    main_game_loop()
 
-
-#Call Function 4 using an example from gamefunctions.py.
-gamefunctions.print_shop_menu("Apple", 31, "Pear", 1.234)
 
 
