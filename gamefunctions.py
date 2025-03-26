@@ -6,17 +6,11 @@
 '''This module provides functions to be imported by the game.py file.
 '''
 
-import random
+import random 
 
-#Game variables.
-player_HP = 30
-player_gold = 10
-player_damage = random.randint(5, 10) #The damage the player does.
-monster_HP = random.randint(5, 50)
-monster_damage = random.randint(5, 10) #The damage the monster does.
 
 '''Call the print_town_menu() function to print a sign that contains a list of the players current status and avaiable options.'''
-def print_town_menu():
+def print_town_menu(player_HP, player_gold):
     '''This function prints a list of the players current HP and gold status.
     It also displays three options to progress or end game play.
 
@@ -27,9 +21,8 @@ def print_town_menu():
     None.
 
     '''
-    #Print the top of the sign border.
+    
     print(f'/----------------------------------\\')
-
     print(f'| You are in town.                 |')
     print(f'| Current HP: {player_HP:<15}      |')
     print(f'| Current Gold: {player_gold:<17}  |')
@@ -38,9 +31,6 @@ def print_town_menu():
     print(f'| 1) Leave town (Fight Monster)    |')
     print(f'| 2) Sleep (Restore HP for 5 Gold) |')
     print(f'| 3) Quit                          |')
-
-
-    #Print the bottom of the border.
     print(f'\\----------------------------------/')
 
 '''Call the user_selection function to recieve a valid input.'''
@@ -55,23 +45,18 @@ def user_selection():
     
     '''
     while True:
-         
          try:
-             
             user_input = int(input('Please enter menu option 1, 2, or 3:'))
-             
             if user_input in range(1, 4):
                 return user_input
-             
             else:
                 print('Invalid input. Please enter a valid selection.')
-
          except ValueError:
              print('Invalid input. Please enter a valid selection.')
 
 
 '''Call the function to print the menu during a monster fight.'''
-def monster_fight_menu():
+def monster_fight_menu(monster_HP, player_HP):
     '''This function prints the menu during a monster fight.
     
     Arguements:
@@ -81,20 +66,19 @@ def monster_fight_menu():
     None.
 
     '''
-    global monster_HP, player_HP
 
-    print()
-    print('Fight the monster!')
-    print(f'Monster HP: {monster_HP}')
-    print(f'Player HP: {player_HP}')
-    print()
-    print('1) Continue fighting!')
-    print('2) Run away!')
-    print()
+    print(f'/----------------------------------\\')
+    print(f'| Fight the monster!               |')
+    print(f'| Monster HP: {monster_HP:<16}     |')
+    print(f'| Player HP: {player_HP:<15}       |')
+    print(f'|                                  |')
+    print(f'| 1) Continue fighting!            |')
+    print(f'| 2) Run away!                     |')
+    print(f'\\----------------------------------/')
 
 
 '''Call this function to review monster and player HP before a fight.'''
-def monster_fight_HP():
+def monster_fight_HP(monster_HP, player_HP, player_gold):
         '''This function is used to determine the HP.
         If the player equals or is less than zero, they've been defeated.
         If the monster equals or is less than zero, they've been defeated.
@@ -107,25 +91,22 @@ def monster_fight_HP():
 
         '''
 
-        global monster_HP, player_HP, player_gold
-
         if player_HP <= 0:
-
-            print()
+            print(f'*****************************************')
             print('You have been defeated!')
             print('You need to sleep in order to fight again.')
-            print()
-
+            print(f'*****************************************')
+            return player_gold
         elif monster_HP <= 0:
-
-            print()
+            print(f'********************************************')
             print('You defeated the monster! You earned 10 Gold!')
-            print()
-            player_gold += 10
+            print(f'********************************************')
+            return player_gold + 10
+        return player_gold
 
 
 '''Call this function to select a monster_fight_option.'''
-def monster_fight_options():
+def monster_fight_options(monster_HP, player_HP, player_damage, monster_damage):
         '''This function is used to go over the monster fight options when called.
         
         Arguments:
@@ -136,34 +117,33 @@ def monster_fight_options():
 
         '''
 
-        global monster_HP, player_HP, player_damage, monster_damage
-        
         fight_option = int(input('Please enter menu option 1 or 2:'))
 
         if fight_option == 1:
-
             monster_HP -= player_damage
             player_HP -= monster_damage
-
-            print()
-            print(f'You dealt {player_damage} to the monster.')
+            print(f'******************************************')
+            print(f'You dealt {player_damage} to the monster. ')
             print(f'The monster dealt {monster_damage} to you.')
-            print()
-
+            print(f'******************************************')
+            return (monster_HP, player_HP, 0)
+        
         elif fight_option == 2:
-
-            print()
+            print(f'***************************')
             print('You ran away from the fight!')
-            print()
+            print(f'***************************')
+            return (monster_HP, player_HP, 1)
 
         else:
-            print()
+            print(f'********************************************')
             print('Invalid input. Please enter a valid selection')
-            print()
+            print(f'********************************************')
+            return (monster_HP, player_HP, -1)     
+        
 
 
 '''Call fight_monster to fight a monster when player leaves town.'''
-def fight_monster():
+def fight_monster(player_HP, player_damage, player_gold):
     '''This function is used to fight a monster.
     The user can choose whether to fight or run away.
 
@@ -174,26 +154,23 @@ def fight_monster():
     None.
 
     '''
-    
-    global player_HP, monster_HP, player_gold
-
     monster_HP = random.randint(5, 50)
+    monster_damage = random.randint(5, 10) 
 
-    while monster_HP > 0 and player_HP > 0:
-
-        monster_fight_menu()
-
-        monster_fight_options()
-
-        monster_fight_HP()
-
-        check_game_over()
-
-    return
+    while (monster_HP > 0 and player_HP > 0):
+        monster_fight_menu(monster_HP, player_HP)
+        monster_HP, player_HP, flag = monster_fight_options(monster_HP, player_HP, player_damage, monster_damage)
+        if flag == 1:
+            return (player_HP, player_gold)
+        player_gold = monster_fight_HP(monster_HP, player_HP, player_gold)
+        check = check_game_over(player_HP, player_gold)
+        if check:
+            exit()
+    return (player_HP, player_gold)
 
 
 '''Call sleep function to restore player HP.'''
-def sleep():
+def sleep(player_gold, player_HP):
     '''This function is used to let the player sleep and return to full HP.
     The cost of this is 5 Gold.
     If the player can't afford to sleep, they won't be able to.
@@ -205,27 +182,25 @@ def sleep():
     None.
 
     '''
-    global player_gold, player_HP
 
     if player_gold >= 5:
-
         player_HP = 30
         player_gold -= 5
-        print()
+        print(f'**************************************')
         print('You slept and restored your HP to full!')
-        print()
-    
+        print(f'**************************************')
+        return (player_HP, player_gold)
     else:
-
-        print()
+        print(f'************************************')
         print('You do not have enough Gold to sleep.')
-        print()
-
-    check_game_over()
+        print(f'************************************')
+    check = check_game_over(player_HP, player_gold)
+    if check:
+        exit()
 
 
 '''Call this function to check if the game is over. HP and Gold == 0.'''
-def check_game_over():
+def check_game_over(player_HP, player_gold):
     '''This function checks to see if the player has zero gold and zero HP.
     If so, the game will end.
 
@@ -236,15 +211,14 @@ def check_game_over():
     None.
 
     '''
-    global player_HP, player_gold
 
     if player_HP <= 0 and player_gold <= 0:
-
-        print()
+        print(f'******************************************')
         print('You have no HP and no Gold left. GAME OVER.')
-        print()
+        print(f'******************************************')
+        return True
+    return False
 
-        exit()
 
 
 
