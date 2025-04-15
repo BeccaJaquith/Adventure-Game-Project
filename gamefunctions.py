@@ -3,6 +3,7 @@
 '''
 
 import random 
+import json
 
 #-------------------------Town Menu-------------------------#
 '''Call the print_town_menu() function to print a sign that contains a list of the players current status and avaiable options.'''
@@ -28,7 +29,7 @@ def print_town_menu(player_HP, player_gold):
     print(f'| 2) Sleep (Restore HP for 5 Gold) |')
     print(f'| 3) Visit Shop                    |')
     print(f'| 4) Manage Inventory              |')
-    print(f'| 5) Quit                          |')
+    print(f'| 5) Save and Quit                 |')
     print(f'\\----------------------------------/')
 
 '''Call the user_selection function to recieve a valid input.'''
@@ -550,5 +551,22 @@ def print_invalid_input():
     print(f'\\------------------------------------------------/')
 
 
+
+#-------------------------Save Game-------------------------#
+
+def save_game(player_HP, player_gold, inventory, equipped):
+    player_data = {
+        "player_hp": player_HP,
+        "player_gold": player_gold,
+        "inventory": inventory,
+        "equipped": equipped
+    }
+    with open('save.json', 'w') as player_save:
+        json.dump(player_data, player_save, indent=4)
+
+def load_game():
+    with open('save.json', 'r') as player_save:
+        player_data = json.load(player_save)
+    return player_data
 
 

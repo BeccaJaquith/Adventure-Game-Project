@@ -1,7 +1,3 @@
-#CSCI 150 Assignment 9 - Game Loops (Project)
-#Rebecca Jaquith
-#March 23, 2025
-
 '''In this module I will import the gamefunctions.py file and call various functions.
 The functions, along with the game.py file will allow the user to play a very basic game.
 
@@ -9,6 +5,10 @@ The functions, along with the game.py file will allow the user to play a very ba
 
 import gamefunctions
 import random
+import json
+import os
+
+
 
 '''Call the main_loop_game to view the town menu and play the game.'''
 def main_game_loop():
@@ -26,6 +26,36 @@ def main_game_loop():
     player_gold = 20
     inventory = []
     equipped = []
+
+
+    
+    print(f'/--------------------------------------\\')
+    print(f'|{f'Welcome to Becca\'s Adventure Game!':^38}|')
+    print(f'|                                      |')
+    print(f'| 1) Start New Game                    |')
+    print(f'| 2) Load Saved Game                   |')
+    print(f'|                                      |')
+    print(f'\\--------------------------------------/')
+
+    choice = input("Choose an option: ")
+
+    if choice == "2":
+        player_data = gamefunctions.load_game()
+        if player_data:
+            player_HP = player_data["player_hp"]
+            player_gold = player_data["player_gold"]
+            inventory = player_data["inventory"]
+            equipped = player_data["equipped"]
+        else:
+            player_HP = 30
+            player_gold = 20
+            inventory = []
+            equipped = []
+    else:
+        player_HP = 30
+        player_gold = 20
+        inventory = []
+        equipped = []
 
     while True:
 
@@ -45,6 +75,7 @@ def main_game_loop():
             print(f'|             Thank you for playing!             |')
             print(f'|                                                |')
             print(f'\\------------------------------------------------/')
+            gamefunctions.save_game(player_HP, player_gold, inventory, equipped)
             break
 
 if __name__ == "__main__":
