@@ -554,7 +554,17 @@ def print_invalid_input():
 
 #-------------------------Save Game-------------------------#
 
+'''Call this function to save player data.'''
 def save_game(player_HP, player_gold, inventory, equipped):
+    '''This function saves player data.
+    
+    Arguments:
+    player_HP, player_gold, inventory, equipped
+
+    Return:
+    None.
+
+    '''
     player_data = {
         "player_hp": player_HP,
         "player_gold": player_gold,
@@ -564,7 +574,18 @@ def save_game(player_HP, player_gold, inventory, equipped):
     with open('save.json', 'w') as player_save:
         json.dump(player_data, player_save, indent=4)
 
+
+'''Call this function to load saved player data.'''
 def load_game():
+    '''This function loads saved player data.
+    
+    Arguments:
+    None.
+
+    Return:
+    player_data
+    
+    '''
     with open('save.json', 'r') as player_save:
         player_data = json.load(player_save)
     return player_data
