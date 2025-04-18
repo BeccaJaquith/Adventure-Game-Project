@@ -28,7 +28,7 @@ def main_game_loop():
 
     
     print(f'/--------------------------------------\\')
-    print(f'|{f'Welcome to Becca\'s Adventure Game!':^38}|')
+    print(f'|{'Welcome to Becca\'s Adventure Game!':^38}|')
     print(f'|                                      |')
     print(f'| 1) Start New Game                    |')
     print(f'| 2) Load Saved Game                   |')
