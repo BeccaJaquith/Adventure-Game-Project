@@ -28,7 +28,7 @@ def main_game_loop():
 
     
     print(f'/--------------------------------------\\')
-    print(f'|{"Welcome to Beccas Adventure Game!":^38}|')
+    print(f'|   Welcome to Beccas Adventure Game!  |')
     print(f'|                                      |')
     print(f'| 1) Start New Game                    |')
     print(f'| 2) Load Saved Game                   |')
@@ -78,7 +78,7 @@ def main_game_loop():
             print(f'|             Thank you for playing!             |')
             print(f'|                                                |')
             print(f'\\------------------------------------------------/')
-            gamefunctions.save_game(player_HP, player_gold, inventory, equipped)
+            gamefunctions.save_game(player_HP, player_gold, inventory, equipped, map_state)
             break
 
 if __name__ == "__main__":
