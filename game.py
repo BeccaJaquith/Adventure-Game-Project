@@ -4,10 +4,7 @@ The functions, along with the game.py file will allow the user to play a very ba
 '''
 
 import gamefunctions
-import random
-import json
-import os
-
+import map_module
 
 
 '''Call the main_loop_game to view the town menu and play the game.'''
@@ -22,10 +19,11 @@ def main_game_loop():
 
     '''
     #Game variables.
-    player_HP = 30
-    player_gold = 20
+    player_HP = 50
+    player_gold = 30
     inventory = []
     equipped = []
+    map_state = {}
 
 
     
@@ -46,23 +44,27 @@ def main_game_loop():
             player_gold = player_data["player_gold"]
             inventory = player_data["inventory"]
             equipped = player_data["equipped"]
+            map_state = player_data["map"]
+
         else:
-            player_HP = 30
-            player_gold = 20
+            player_HP = 50
+            player_gold = 30
             inventory = []
             equipped = []
+            map_state = map_module.get_default_state()
     else:
-        player_HP = 30
-        player_gold = 20
+        player_HP = 50
+        player_gold = 30
         inventory = []
         equipped = []
+        map_state = map_module.get_default_state()
 
     while True:
 
         gamefunctions.print_town_menu(player_HP, player_gold)
         user_choice = gamefunctions.user_selection()
         if user_choice == 1: #Leave town and fight monster.
-            player_HP, player_gold, inventory = gamefunctions.fight_monster(player_HP, player_gold, inventory, equipped)
+            player_HP, player_gold, inventory, equipped = gamefunctions.explore(player_HP, player_gold, inventory, equipped)
         elif user_choice == 2: #Sleep and restore HP.
             player_HP, player_gold = gamefunctions.sleep(player_gold, player_HP)
         elif user_choice == 3: #Visit the game shop.
@@ -72,6 +74,7 @@ def main_game_loop():
         elif user_choice == 5: #Quit the game.
             print(f'/------------------------------------------------\\')
             print(f'|                                                |')
+            print(f'|            Your game has been saved!           |')
             print(f'|             Thank you for playing!             |')
             print(f'|                                                |')
             print(f'\\------------------------------------------------/')

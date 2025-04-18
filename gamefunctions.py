@@ -4,6 +4,7 @@
 
 import random 
 import json
+import map_module
 
 #-------------------------Town Menu-------------------------#
 '''Call the print_town_menu() function to print a sign that contains a list of the players current status and avaiable options.'''
@@ -106,11 +107,12 @@ def monster_fight_HP(monster_HP, player_HP, player_gold):
         elif monster_HP <= 0:
             print(f'/-------------------------------------------------\\')
             print(f'|                                                 |')
-            print(f'|            You defeated the monster!            |')
-            print(f'|               You earned 10 Gold!               |')
+            print(f'|            You defeated the monster             |')
+            print(f'|              and took their Gold!               |')
             print(f'|                                                 |')
             print(f'\\-------------------------------------------------/')
-            return player_gold + 10
+            player_gold = player_gold + random.randint(10, 50)
+            return player_gold
         return player_gold
 
 
@@ -172,7 +174,7 @@ def monster_fight_options(monster_HP, player_HP, inventory, equipped):
             print(f'|{f"The monster dealt {monster_damage} damage to you.":^49}|')
             print(f'|                                                 |')
             print(f'\\-------------------------------------------------/')
-            return (monster_HP, player_HP, inventory, 0)
+            return (monster_HP, player_HP, inventory, equipped, 0)
         
         elif fight_option == '2' and has_potion:
             for item in inventory:
@@ -187,7 +189,7 @@ def monster_fight_options(monster_HP, player_HP, inventory, equipped):
                     print(f'|{f"You used a Health Potion! Player HP increased by {potion_power}!":^52}|')
                     print(f'|                                                    |')
                     print(f'\\----------------------------------------------------/')
-                    return monster_HP, player_HP, inventory, 0
+                    return monster_HP, player_HP, inventory, equipped, 0
         elif fight_option == '2' and not has_potion:    
             print(f'/------------------------------------------------\\')
             print(f'|                                                |')
@@ -196,7 +198,7 @@ def monster_fight_options(monster_HP, player_HP, inventory, equipped):
             print(f'|           Select a different option.           |')
             print(f'|                                                |')
             print(f'\\------------------------------------------------/')
-            return monster_HP, player_HP, inventory, 0
+            return monster_HP, player_HP, inventory, equipped, 0
 
         elif fight_option == '3' and has_poison:
             for item in inventory:
@@ -212,7 +214,7 @@ def monster_fight_options(monster_HP, player_HP, inventory, equipped):
                     print(f'|{f"You used a Poison Arrow! Monster HP reduced by {poison_effect}!":^52}|')
                     print(f'|                                                    |')
                     print(f'\\----------------------------------------------------/')
-                    return monster_HP, player_HP, inventory, 0
+                    return monster_HP, player_HP, inventory, equipped, 0
             
         elif fight_option == '3' and not has_poison:
                 print(f'/------------------------------------------------\\')
@@ -222,7 +224,7 @@ def monster_fight_options(monster_HP, player_HP, inventory, equipped):
                 print(f'|           Select a different option.           |')
                 print(f'|                                                |')
                 print(f'\\------------------------------------------------/')
-                return monster_HP, player_HP, inventory, 0
+                return monster_HP, player_HP, inventory, equipped, 0
 
         elif fight_option == '4' and has_magic:
             for item in inventory:
@@ -235,7 +237,7 @@ def monster_fight_options(monster_HP, player_HP, inventory, equipped):
                     inventory[inventory.index(item)]['amount'] -= 1
                     if item['amount'] < 1:
                         inventory.remove(item)
-                    return 0, player_HP, inventory, 0
+                    return 0, player_HP, inventory, equipped, 0
     
         elif fight_option == '4' and not has_magic:
             print(f'/------------------------------------------------\\')
@@ -245,7 +247,7 @@ def monster_fight_options(monster_HP, player_HP, inventory, equipped):
             print(f'|           Select a different option.           |')
             print(f'|                                                |')
             print(f'\\------------------------------------------------/')
-            return monster_HP, player_HP, inventory, 0
+            return monster_HP, player_HP, inventory, equipped, 0
 
         elif fight_option == '5':
             print(f'/------------------------------------------------\\')
@@ -253,11 +255,11 @@ def monster_fight_options(monster_HP, player_HP, inventory, equipped):
             print(f'|          You ran away from the fight!          |')
             print(f'|                                                |')
             print(f'\\------------------------------------------------/')
-            return (monster_HP, player_HP, inventory, 1)
+            return (monster_HP, player_HP, inventory, equipped, 1)
 
         else:
             print_invalid_input()
-            return (monster_HP, player_HP, inventory, -1)     
+            return (monster_HP, player_HP, inventory, equipped, -1)     
         
 
 '''Call fight_monster to fight a monster when player leaves town.'''
@@ -282,14 +284,14 @@ def fight_monster(player_HP, player_gold, inventory,equipped):
 
     while (monster_HP > 0 and player_HP > 0):
         monster_fight_menu(monster_HP, player_HP)
-        monster_HP, player_HP, inventory, flag = monster_fight_options(monster_HP, player_HP, inventory, equipped)
+        monster_HP, player_HP, inventory, equipped, flag = monster_fight_options(monster_HP, player_HP, inventory, equipped)
         if flag == 1:
-            return (player_HP, player_gold, inventory)
+            return (player_HP, player_gold, inventory, equipped, False)
         player_gold = monster_fight_HP(monster_HP, player_HP, player_gold)
         check = check_game_over(player_HP, player_gold)
         if check:
             exit()
-    return (player_HP, player_gold, inventory)
+    return (player_HP, player_gold, inventory, equipped, True)
 
 
 #-------------------------Sleep / Game Over-------------------------#
@@ -392,8 +394,8 @@ def visit_shop(player_gold, inventory, equipped):
 
     '''
     items = [
-        {'name': 'Sword', 'item type': 'Weapon', 'damage': 5, 'max_durability': 50, 'amount': 1, 'current_durability': 10, 'price': 8}, 
-        {'name': 'Shield', 'item type': 'Armor', 'reduction': 3, 'max_durability': 50, 'amount': 1, 'current_durability': 25, 'price': 6},
+        {'name': 'Sword', 'item type': 'Weapon', 'damage': 5, 'max_durability': 25, 'amount': 1, 'current_durability': 25, 'price': 8}, 
+        {'name': 'Shield', 'item type': 'Armor', 'reduction': 5, 'max_durability': 25, 'amount': 1, 'current_durability': 25, 'price': 6},
         {'name': 'Health Potion', 'item type': 'Consumable', 'effect': {'player_HP': 20}, 'amount': 1, 'price': 7},
         {'name': 'Poison Arrow', 'item type': 'Consumable', 'effect': {'monster_HP': 30}, 'amount': 1, 'price': 15},
         {'name': 'Magic Scroll', 'item type': 'Consumable', 'effect': 'instant kill', 'amount': 1, 'price': 20}
@@ -555,7 +557,7 @@ def print_invalid_input():
 #-------------------------Save Game-------------------------#
 
 '''Call this function to save player data.'''
-def save_game(player_HP, player_gold, inventory, equipped):
+def save_game(player_HP, player_gold, inventory, equipped, map):
     '''This function saves player data.
     
     Arguments:
@@ -569,7 +571,8 @@ def save_game(player_HP, player_gold, inventory, equipped):
         "player_hp": player_HP,
         "player_gold": player_gold,
         "inventory": inventory,
-        "equipped": equipped
+        "equipped": equipped,
+        "map": map
     }
     with open('save.json', 'w') as player_save:
         json.dump(player_data, player_save, indent=4)
@@ -584,10 +587,73 @@ def load_game():
 
     Return:
     player_data
-    
+
     '''
     with open('save.json', 'r') as player_save:
         player_data = json.load(player_save)
     return player_data
+
+
+#-------------------------Graphics-------------------------#
+'''Call this function to explore the map.'''
+def explore(player_HP, player_gold, inventory, equipped, map_state):
+    '''This function is called to explore the map and search for monsters.
+    
+    Arguments:
+    player_HP, player_gold, inventory, equipped
+
+    Return:
+    player_HP, player_gold, inventory, equipped
+
+    '''
+
+    map_module.respawn_monster()
+
+    while True:
+        result = map_module.show_map(map_state)
+
+        if result == "battle":
+
+            player_HP, player_gold, inventory, equipped, monster_defeated_flag = fight_monster(player_HP, player_gold, inventory, equipped)
+
+            if not monster_defeated_flag:
+                print(f'/---------------------------------------------\\')
+                print(f'|                                             |')
+                print(f'|        You ran away from the fight.         |')
+                print(f'|        Head back to town to heal up!        |')
+                print(f'|                                             |')
+                print(f'\\---------------------------------------------/')
+                map_module.show_map()
+                return player_HP, player_gold, inventory, equipped
+
+            if player_HP > 0:
+                
+                map_module.mark_monster_defeated()
+
+                print(f'/---------------------------------------------\\')
+                print(f'|                                             |')
+                print(f'|   You returned to the map after the fight.  |')
+                print(f'|             Head back to town!              |')
+                print(f'|                                             |')
+                print(f'\\---------------------------------------------/')
+
+                map_module.show_map()
+
+                return player_HP, player_gold, inventory, equipped
+            
+            else:
+                #Player died during the fight.
+                break
+
+        elif result == "town":
+            print(f'/---------------------------------------------\\')
+            print(f'|                                             |')
+            print(f'|     You returned to town. Welcome back!     |')
+            print(f'|                                             |')
+            print(f'\\---------------------------------------------/')
+            map_module.respawn_monster()
+            break
+
+    return player_HP, player_gold, inventory, equipped
 
 
