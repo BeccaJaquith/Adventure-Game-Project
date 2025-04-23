@@ -64,7 +64,7 @@ def main_game_loop():
         gamefunctions.print_town_menu(player_HP, player_gold)
         user_choice = gamefunctions.user_selection()
         if user_choice == 1: #Leave town and fight monster.
-            player_HP, player_gold, inventory, equipped = gamefunctions.explore(player_HP, player_gold, inventory, equipped, map_state)
+            player_HP, player_gold, inventory, equipped, map_state = gamefunctions.explore(player_HP, player_gold, inventory, equipped, map_state)
         elif user_choice == 2: #Sleep and restore HP.
             player_HP, player_gold = gamefunctions.sleep(player_gold, player_HP)
         elif user_choice == 3: #Visit the game shop.
@@ -78,7 +78,7 @@ def main_game_loop():
             print(f'|             Thank you for playing!             |')
             print(f'|                                                |')
             print(f'\\------------------------------------------------/')
-            gamefunctions.save_game(player_HP, player_gold, inventory, equipped)
+            gamefunctions.save_game(player_HP, player_gold, inventory, equipped, map_state)
             break
 
 if __name__ == "__main__":
