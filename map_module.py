@@ -2,6 +2,7 @@ import pygame
 import json
 import os
 import random
+import wanderingMonster
 
 map_width = 10
 map_height = 10
@@ -16,43 +17,56 @@ blue = (0, 0, 255)
 green = (0, 255, 0)
 red = (255, 0, 0)
 
+
+'''Call the get_default_state function to set positions on the map.'''
 def get_default_state():
-    rand_town = [random.randint(0, map_width), random.randint(0, map_height)]
+    '''This function is used to set and call the positions of the town, player and monsters at the inital start.
+    
+    Arguments:
+    None.
+
+    Return:
+    player_positon, town_position, monsters
+    
+    '''
+    town_pos = [5, 5]
+    monsters = [wanderingMonster.Monster(), wanderingMonster.Monster()]
     return {
-        "player_position": rand_town,
-        "town_position": rand_town,
-        "monster_position": [5, 5],
-        "monster_defeated": False
+        "player_position": town_pos,
+        "town_position": town_pos,
+        "monsters": monsters
     }
 
-def load_map_state():
-    if not os.path.exists(map_state_file):
-        return get_default_state()
 
-    with open(map_state_file, "r") as file:
-        try:
-            state = json.load(file)
-        except json.JSONDecodeError:
-            return get_default_state()
-
-    default = get_default_state()
-    for key in default:
-        if key not in state:
-            state[key] = default[key]
-
-    return state
-
-def save_map_state(state):
-    with open(map_state_file, "w") as file:
-        json.dump(state, file, indent=4)
-
+'''Call generate_monster_position to generate the monsters position on the map during play.'''
 def generate_monster_position(town_pos):
+    '''This function is used to generate the position of the monsters as they move around the map.
+    Makes sure that the monster can't generate on the town position.
+    
+    Arguments:
+    town_pos
+
+    Return:
+    pos
+
+    '''
     while True:
         pos = [random.randint(0, map_width - 1), random.randint(0, map_height - 1)]
         if pos != town_pos:
             return pos
 
+
+'''Call show_map to populate the game screen, set movements and graphics.'''
 def show_map(state):
+    '''This function is used to set the screen up, adjust movement speed, generate graphics, and monster interaction.
+    
+    Arguments:
+    state
+
+    Return:
+    result
+    
+    '''
     pygame.init()
     screen = pygame.display.set_mode((screen_width, screen_height))
     pygame.display.set_caption("Explore Map")
@@ -61,13 +75,19 @@ def show_map(state):
     running = True
 
     player_x, player_y = state["player_position"]
-    monster_x, monster_y = state["monster_position"]
+    monsters = state["monsters"]
     town_x, town_y = state["town_position"]
-    monster_defeated = state.get("monster_defeated", False)
 
     result = None
 
+    monster_move = 0
+
     while running:
+        # Respawn monsters when all are dead
+        if len(monsters) <= 0:
+            state = respawn_monsters(state)
+            monsters = state["monsters"]
+
         screen.fill(white)
 
         #Draw town.
@@ -79,11 +99,11 @@ def show_map(state):
         )
 
         #Draw monster if not defeated.
-        if not monster_defeated:
+        for monster in monsters:
             pygame.draw.circle(
                 screen,
-                red,
-                (monster_x * tile_size + tile_size // 2, monster_y * tile_size + tile_size // 2),
+                monster.color,
+                (monster.position[1] * tile_size + tile_size // 2, monster.position[0] * tile_size + tile_size // 2),
                 tile_size // 2 - 4,
             )
 
@@ -117,28 +137,39 @@ def show_map(state):
 
                 player_x, player_y = new_x, new_y
                 state["player_position"] = [player_x, player_y]
-                save_map_state(state)
+
+                if monster_move >= 1:
+                    for monster in monsters:
+                        monster.move()
+                    monster_move = -1
 
                 if [player_x, player_y] == [town_x, town_y]:
                     pygame.quit()
-                    return "town"
+                    return "town", None
 
-                if [player_x, player_y] == [monster_x, monster_y] and not monster_defeated:
-                    pygame.quit()
-                    return "battle"
+                for monster in monsters:
+                    if [player_x, player_y] == [monster.position[1], monster.position[0]]:
+                        pygame.quit()
+                        return "battle", monster
+                    
+                monster_move += 1
 
         clock.tick(60)
 
     pygame.quit()
     return result
 
-def mark_monster_defeated():
-    state = load_map_state()
-    state["monster_defeated"] = True
-    save_map_state(state)
 
-def respawn_monster():
-    state = load_map_state()
-    state["monster_defeated"] = False
-    state["monster_position"] = generate_monster_position(state["town_position"])
-    save_map_state(state)
+'''Call respawn_monsters to respawn two monsters.'''
+def respawn_monsters(state):
+    '''This function is used to call two monsters from the wanderingMonster.py file.
+    
+    Arguments:
+    state
+
+    Return:
+    state
+    
+    '''
+    state["monsters"] = [wanderingMonster.Monster(), wanderingMonster.Monster()]
+    return state
