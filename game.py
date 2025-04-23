@@ -25,7 +25,6 @@ def main_game_loop():
     equipped = []
     map_state = {}
 
-
     
     print(f'/--------------------------------------\\')
     print(f'|   Welcome to Beccas Adventure Game!  |')
