@@ -5,6 +5,7 @@
 import random 
 import json
 import map_module
+import wanderingMonster
 
 #-------------------------Town Menu-------------------------#
 '''Call the print_town_menu() function to print a sign that contains a list of the players current status and avaiable options.'''
@@ -58,7 +59,7 @@ def user_selection():
 
 #-------------------------Combat-------------------------#
 '''Call the function to print the menu during a monster fight.'''
-def monster_fight_menu(monster_HP, player_HP):
+def monster_fight_menu(monster_HP, player_HP, monster_name):
     '''This function prints the menu during a monster fight.
     
     Arguments:
@@ -70,7 +71,7 @@ def monster_fight_menu(monster_HP, player_HP):
     '''
 
     print(f'/----------------------------------\\')
-    print(f'| Fight the monster!               |')
+    print(f'| {f"Fight the {monster_name}!":<33}|')
     print(f'| Monster HP: {monster_HP:<16}     |')
     print(f'| Player HP: {player_HP:<15}       |')
     print(f'|                                  |')
@@ -117,7 +118,7 @@ def monster_fight_HP(monster_HP, player_HP, player_gold):
 
 
 '''Call this function to select a monster_fight_option.'''
-def monster_fight_options(monster_HP, player_HP, inventory, equipped):
+def monster_fight_options(monster_HP, player_HP, inventory, equipped, monster):
         '''This function is used to go over the monster fight options when called.
         
         Arguments:
@@ -161,7 +162,7 @@ def monster_fight_options(monster_HP, player_HP, inventory, equipped):
                         print(f'\\-------------------------------------------------/')
                         equipped.pop(equipped.index(item))
 
-            monster_damage = random.randint(0, 10) - total_damage_reduction #Damage done by monster.
+            monster_damage = monster.damage - total_damage_reduction #Damage done by monster.
             if monster_damage < 0:
                 monster_damage = 0
             player_damage = random.randint(0, 10) + total_damage_increase #Damage done by player.
@@ -263,7 +264,7 @@ def monster_fight_options(monster_HP, player_HP, inventory, equipped):
         
 
 '''Call fight_monster to fight a monster when player leaves town.'''
-def fight_monster(player_HP, player_gold, inventory,equipped):
+def fight_monster(player_HP, player_gold, inventory,equipped, monster):
     '''This function is used to fight a monster.
     The user can choose whether to fight or run away.
 
@@ -274,17 +275,17 @@ def fight_monster(player_HP, player_gold, inventory,equipped):
     player_HP, player_gold, inventory
 
     '''
-    monster_HP = random.randint(5, 50) 
+    monster_HP = monster.hp
 
     print(f'/------------------------------------------------\\')
     print(f'|                                                |')
-    print(f'|{f"A monster with {monster_HP} HP appears!":^48}|')
+    print(f'|{f"A {monster.name} with {monster_HP} HP appears!":^48}|')
     print(f'|                                                |')
     print(f'\\------------------------------------------------/')
 
     while (monster_HP > 0 and player_HP > 0):
-        monster_fight_menu(monster_HP, player_HP)
-        monster_HP, player_HP, inventory, equipped, flag = monster_fight_options(monster_HP, player_HP, inventory, equipped)
+        monster_fight_menu(monster_HP, player_HP, monster.name)
+        monster_HP, player_HP, inventory, equipped, flag = monster_fight_options(monster_HP, player_HP, inventory, equipped, monster)
         if flag == 1:
             return (player_HP, player_gold, inventory, equipped, False)
         player_gold = monster_fight_HP(monster_HP, player_HP, player_gold)
@@ -567,12 +568,19 @@ def save_game(player_HP, player_gold, inventory, equipped, map):
     None.
 
     '''
+    serialized_map = {
+        "player_position": map["player_position"],
+        "town_position": map["town_position"],
+        "monsters": []    
+    }
+    for monster in map["monsters"]:
+        serialized_map["monsters"].append(monster.serialize())
     player_data = {
         "player_hp": player_HP,
         "player_gold": player_gold,
         "inventory": inventory,
         "equipped": equipped,
-        "map": map
+        "map": serialized_map
     }
     with open('save.json', 'w') as player_save:
         json.dump(player_data, player_save, indent=4)
@@ -591,6 +599,10 @@ def load_game():
     '''
     with open('save.json', 'r') as player_save:
         player_data = json.load(player_save)
+
+    for i, monster_dict in enumerate(player_data["map"]["monsters"]):
+        monster = wanderingMonster.Monster()
+        player_data["map"]["monsters"][i] = monster.deserialize(monster_dict)
     return player_data
 
 
@@ -606,15 +618,15 @@ def explore(player_HP, player_gold, inventory, equipped, map_state):
     player_HP, player_gold, inventory, equipped
 
     '''
-
-    map_module.respawn_monster()
+    # if len(map_state["monsters"]) <= 0 :
+    #     map_state = map_module.respawn_monsters(map_state)
 
     while True:
-        result = map_module.show_map(map_state)
+        result, monster = map_module.show_map(map_state)
 
         if result == "battle":
 
-            player_HP, player_gold, inventory, equipped, monster_defeated_flag = fight_monster(player_HP, player_gold, inventory, equipped)
+            player_HP, player_gold, inventory, equipped, monster_defeated_flag = fight_monster(player_HP, player_gold, inventory, equipped, monster)
 
             if not monster_defeated_flag:
                 print(f'/---------------------------------------------\\')
@@ -623,26 +635,26 @@ def explore(player_HP, player_gold, inventory, equipped, map_state):
                 print(f'|        Head back to town to heal up!        |')
                 print(f'|                                             |')
                 print(f'\\---------------------------------------------/')
-                map_module.show_map()
-                return player_HP, player_gold, inventory, equipped
+                continue
+                # return player_HP, player_gold, inventory, equipped, map_state
 
             if player_HP > 0:
                 
-                map_module.mark_monster_defeated()
+                map_state["monsters"].remove(monster)
 
                 print(f'/---------------------------------------------\\')
                 print(f'|                                             |')
                 print(f'|   You returned to the map after the fight.  |')
-                print(f'|             Head back to town!              |')
                 print(f'|                                             |')
                 print(f'\\---------------------------------------------/')
 
-                map_module.show_map()
+                continue
 
-                return player_HP, player_gold, inventory, equipped
+                # return player_HP, player_gold, inventory, equipped, map_state
             
             else:
                 #Player died during the fight.
+                map_state["player_position"] = map_state["town_position"]
                 break
 
         elif result == "town":
@@ -651,9 +663,8 @@ def explore(player_HP, player_gold, inventory, equipped, map_state):
             print(f'|     You returned to town. Welcome back!     |')
             print(f'|                                             |')
             print(f'\\---------------------------------------------/')
-            map_module.respawn_monster()
             break
 
-    return player_HP, player_gold, inventory, equipped
+    return player_HP, player_gold, inventory, equipped, map_state
 
 
