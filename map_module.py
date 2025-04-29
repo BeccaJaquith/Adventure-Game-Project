@@ -100,19 +100,27 @@ def show_map(state):
 
         #Draw monster if not defeated.
         for monster in monsters:
-            pygame.draw.circle(
-                screen,
-                monster.color,
-                (monster.position[1] * tile_size + tile_size // 2, monster.position[0] * tile_size + tile_size // 2),
-                tile_size // 2 - 4,
-            )
+            try:
+                monster_image = pygame.image.load('images/' + monster.name.lower() + ".png")
+                screen.blit(monster_image, (monster.position[1] * tile_size, monster.position[0] * tile_size))
+            except FileNotFoundError:
+                pygame.draw.circle(
+                    screen,
+                    monster.color,
+                    (monster.position[1] * tile_size + tile_size // 2, monster.position[0] * tile_size + tile_size // 2),
+                    tile_size // 2 - 4,
+                )
 
         #Draw player.
-        pygame.draw.rect(
-            screen,
-            blue,
-            pygame.Rect(player_x * tile_size, player_y * tile_size, tile_size, tile_size)
-        )
+        try:
+            player_image = pygame.image.load('images/player.png')
+            screen.blit(player_image, (player_x * tile_size, player_y * tile_size))
+        except FileNotFoundError:
+            pygame.draw.rect(
+                screen,
+                blue,
+                pygame.Rect(player_x * tile_size, player_y * tile_size, tile_size, tile_size)
+            )
 
         pygame.display.flip()
 
