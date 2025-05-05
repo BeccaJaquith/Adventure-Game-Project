@@ -83,20 +83,25 @@ def show_map(state):
     monster_move = 0
 
     while running:
+        # Draw map
+        map_image = pygame.image.load("images/map.png")
+        map_image = pygame.transform.scale(map_image, (320, 320))
+        screen.blit(map_image, (0, 0))
+
         # Respawn monsters when all are dead
         if len(monsters) <= 0:
             state = respawn_monsters(state)
             monsters = state["monsters"]
 
-        screen.fill(white)
+        # screen.fill(white)
 
-        #Draw town.
-        pygame.draw.circle(
-            screen,
-            green,
-            (town_x * tile_size + tile_size // 2, town_y * tile_size + tile_size // 2),
-            tile_size // 2 - 4,
-        )
+        # #Draw town.
+        # pygame.draw.circle(
+        #     screen,
+        #     green,
+        #     (town_x * tile_size + tile_size // 2, town_y * tile_size + tile_size // 2),
+        #     tile_size // 2 - 4,
+        # )
 
         #Draw monster if not defeated.
         for monster in monsters:
@@ -154,6 +159,18 @@ def show_map(state):
                 if [player_x, player_y] == [town_x, town_y]:
                     pygame.quit()
                     return "town", None
+                
+                if [player_x, player_y] == [3, 2]:
+                    pygame.quit()
+                    return 'berry', None
+                
+                if [player_x, player_y] == [1, 7]:
+                    pygame.quit()
+                    return 'lake', None
+                
+                if [player_x, player_y] == [8, 1]:
+                    pygame.quit()
+                    return 'forest', None
 
                 for monster in monsters:
                     if [player_x, player_y] == [monster.position[1], monster.position[0]]:
