@@ -29,9 +29,10 @@ def print_town_menu(player_HP, player_gold):
     print(f'|                                  |')
     print(f'| 1) Leave town (Fight Monster)    |')
     print(f'| 2) Sleep (Restore HP for 5 Gold) |')
-    print(f'| 3) Visit Shop                    |')
-    print(f'| 4) Manage Inventory              |')
-    print(f'| 5) Save and Quit                 |')
+    print(f'| 3) Eat Berries                   |')
+    print(f'| 4) Visit Shop                    |')
+    print(f'| 5) Manage Inventory              |')
+    print(f'| 6) Save and Quit                 |')
     print(f'\\----------------------------------/')
 
 '''Call the user_selection function to recieve a valid input.'''
@@ -42,13 +43,13 @@ def user_selection():
     None.
 
     Return:
-    user_input = 1, 2, 3, 4, 5
+    user_input = 1, 2, 3, 4, 5, 6
     
     '''
     while True:
          try:
-            user_input = int(input('Please enter menu option 1, 2, 3, 4 or 5:'))
-            if user_input in range(1, 6):
+            user_input = int(input('Please enter menu option 1, 2, 3, 4, 5, or 6:'))
+            if user_input in range(1, 7):
                 return user_input
             else:
                 print_invalid_input()
@@ -516,20 +517,20 @@ def inventory_menu(inventory, equipped, equippable):
     print(f'/------------------------------------------------\\')
     print(f'|                   EQUIPPABLE                   |')
     print(f'|                ----------------                |')
-    print(f'| {'   ':<3}{'Item':<15}{'Item Type':<17}{'Durability':<10}  |')
+    print(f'| {'   ':<3}{'Item':<15} {'Item Type':<17}{'Durability':<10} |')
     print(f'|************************************************|')
     for i, item in enumerate(equippable, start = 1):
-        print(f'| {i}) {item['name']:<15}{item['item type']:<17}{f"{item['current_durability']}/{item['max_durability']}":<10}  |')
+        print(f'| {i}) {item['name']:<15} {item['item type']:<17}{f"{item['current_durability']}/{item['max_durability']}":<10} |')
     print(f'|                                                |')
     print(f'\\------------------------------------------------/')
     
     print(f'/------------------------------------------------\\')
     print(f'|                    EQUIPPED                    |')
     print(f'|                ----------------                |')
-    print(f'| {'   ':<3}{'Item':<15}{'Item Type':<17}{'Durability':<10}  |')
+    print(f'| {'   ':<3}{'Item':<15} {'Item Type':<17}{'Durability':<10} |')
     print(f'|************************************************|')
     for i, item in enumerate(equipped, start = len(equippable)+1):
-        print(f'| {i}) {item['name']:<15}{item['item type']:<17}{f"{item['current_durability']}/{item['max_durability']}":<10}  |')
+        print(f'| {i}) {item['name']:<15} {item['item type']:<17}{f"{item['current_durability']}/{item['max_durability']}":<10} |')
     print(f'|                                                |')
     print(f'\\------------------------------------------------/')
 
@@ -612,10 +613,10 @@ def explore(player_HP, player_gold, inventory, equipped, map_state):
     '''This function is called to explore the map and search for monsters.
     
     Arguments:
-    player_HP, player_gold, inventory, equipped
+    player_HP, player_gold, inventory, equipped, map_state
 
     Return:
-    player_HP, player_gold, inventory, equipped
+    player_HP, player_gold, inventory, equipped, map_state
 
     '''
     # if len(map_state["monsters"]) <= 0 :
@@ -665,6 +666,231 @@ def explore(player_HP, player_gold, inventory, equipped, map_state):
             print(f'\\---------------------------------------------/')
             break
 
+        elif result == 'berry':
+            inventory = berry_bush(inventory)
+            print(f'/----------------------------------------------------------------\\')
+            print(f'|                                                                |')
+            print(f'|     You returned to the map after harvesting some berries!     |')
+            print(f'|                                                                |')
+            print(f'\\----------------------------------------------------------------/')
+            continue
+
+        elif result == 'lake':
+            inventory = lake(inventory, equipped)
+            print(f'/----------------------------------------------------------------\\')
+            print(f'|                                                                |')
+            print(f'|        You returned to the map after visiting the lake!        |')
+            print(f'|                                                                |')
+            print(f'\\----------------------------------------------------------------/')
+            continue
+
+        elif result == 'forest':
+            print(f'/---------------------------------------------\\')
+            print(f'|                                             |')
+            print(f'|           You entered the forest!           |')
+            print(f'|      You ran into a hostile monster!        |')
+            print(f'|             Fight the monster!              |')
+            print(f'|                                             |')
+            print(f'\\---------------------------------------------/')
+
+            random_monster = wanderingMonster.Monster()
+
+            player_HP, player_gold, inventory, equipped, monster_defeated_flag = fight_monster(player_HP, player_gold, inventory, equipped, random_monster)
+
+            if not monster_defeated_flag:
+                print(f'/---------------------------------------------\\')
+                print(f'|                                             |')
+                print(f'|        You ran away from the fight.         |')
+                print(f'|        Head back to town to heal up!        |')
+                print(f'|                                             |')
+                print(f'\\---------------------------------------------/')
+                continue
+                # return player_HP, player_gold, inventory, equipped, map_state
+
+            if player_HP > 0:
+
+                print(f'/---------------------------------------------\\')
+                print(f'|                                             |')
+                print(f'|   You returned to the map after the fight.  |')
+                print(f'|                                             |')
+                print(f'\\---------------------------------------------/')
+
+                continue
+
+                # return player_HP, player_gold, inventory, equipped, map_state
+            
+            else:
+                #Player died during the fight.
+                map_state["player_position"] = map_state["town_position"]
+                break
+
+
     return player_HP, player_gold, inventory, equipped, map_state
 
 
+#-------------------------Interactions with map-------------------------#
+'''Call this function for the berry bush interaction.'''
+def berry_bush(inventory):
+    '''This function is called to interact with the berry bush found on the map.
+    
+    Arguments:
+    inventory
+
+    Return:
+    inventory
+    
+    '''
+
+    max_berries = 5
+
+    print(f'/----------------------------------------------\\')
+    print(f'|                                              |')
+    print(f'|           You found a berry bush!            |')
+    print(f'|{f"You can pick up to {max_berries} berries!":^46}|')
+    print(f'|                                              |')
+    print(f'\\----------------------------------------------/')
+
+    berry = {'name': 'Berry', 'item type': 'Consumable', 'effect': {'player_HP': 1}, 'amount': 1}
+
+    #player_input = None
+
+    #while True:
+        #try:
+            #player_input = int(input("How many berries would you like to pick?: "))
+            #break
+
+        #except ValueError:
+            #print_invalid_input()
+    
+    while True:
+        try:
+            player_input = int(input(f"How many berries would you like to pick (max {max_berries})?: "))
+            if 0 < player_input <= max_berries:
+                break
+            else:
+                print(f"Please enter a number between 1 and {max_berries}.")
+        except ValueError:
+            print_invalid_input()
+
+    berry['amount'] = player_input
+
+    berry_in_inventory, index = is_item_in_inventory(inventory, 'Berry')
+
+    if berry_in_inventory:
+        inventory[index]['amount'] += player_input
+
+    else:
+        inventory.append(berry)
+
+    print(f'/---------------------------------------------\\')
+    print(f'|                                             |')
+    print(f'| {f"You picked {player_input} berries!":^43} |')
+    print(f'|                                             |')
+    print(f'\\---------------------------------------------/')
+
+    return inventory
+
+
+'''Call this function to check inventory.'''
+def is_item_in_inventory(inventory, name):
+    '''This function is called when you need to check an item against your inventory.
+    
+    Arguments:
+    inventory, name
+
+    Return:
+    None
+    
+    '''
+    for index, item in enumerate(inventory):
+        if item['name'] == name:
+            return True, index    
+    return False, -1
+
+
+'''Call this function to interact with the lake on the map screen.'''
+def lake(inventory, equipped):
+    '''This function is used to interact with the lake found on the map screen.
+    
+    Arguments:
+    inventory, equipped
+
+    Return:
+    inventory
+    
+    '''
+
+    sword_in_inventory, index = is_item_in_inventory(inventory, 'Enchanted Sword')
+
+    sword_in_equipped, _ = is_item_in_inventory(equipped, 'Enchanted Sword')
+
+    if sword_in_inventory or sword_in_equipped:
+        print(f'/------------------------------------------------------------------\\')
+        print(f'|                                                                  |')
+        print(f'|              You already found the Enchanted Sword!              |')
+        print(f'|                                                                  |')
+        print(f'\\------------------------------------------------------------------/')
+        return inventory
+
+    print(f'/------------------------------------------------------------------\\')
+    print(f'|                                                                  |')
+    print(f'|           You found a strange sword on the lake shore!           |')
+    print(f'|                                                                  |')
+    print(f'\\------------------------------------------------------------------/')
+
+    sword = {'name': 'Enchanted Sword', 'item type': 'Weapon', 'damage': 10, 'max_durability': 50, 'amount': 1, 'current_durability': 50}
+
+    inventory.append(sword)
+
+    return inventory
+
+
+'''Call this function to use the 'Eat Berries' option on the town menu.'''
+def food(player_HP, inventory):
+    '''This function is used to use option 3, 'Eat Berries', on the town menu.
+    
+    Arguments:
+    player_HP, inventory
+
+    Return:
+    player_HP and inventory
+    
+    '''
+    if player_HP >= 50:
+        print(f'/-----------------------------------------------------------------\\')
+        print(f'|                                                                 |')
+        print(f'|                 You are already at full health!                 |')
+        print(f'|                                                                 |')
+        print(f'\\-----------------------------------------------------------------/')
+        return player_HP, inventory
+
+    hp_difference = 50 - player_HP
+
+    berries_in_inventory, berry_index = is_item_in_inventory(inventory, "Berry")
+
+    if not berries_in_inventory:
+        print(f'/-----------------------------------------------------------------\\')
+        print(f'|                                                                 |')
+        print(f'|            You do not have berries in your inventory!           |')
+        print(f'|                                                                 |')
+        print(f'\\-----------------------------------------------------------------/')
+        return player_HP, inventory
+
+    berries = inventory[berry_index]
+    total_eaten = min(hp_difference, berries['amount'])
+
+    player_HP += total_eaten
+    player_HP = min(player_HP, 50)
+    inventory[berry_index]['amount'] -= total_eaten
+
+    if inventory[berry_index]['amount'] == 0:
+        inventory.pop(berry_index)
+
+    print(f"You eat {total_eaten} berries to heal your injuries!")
+    print(f'/-----------------------------------------------------------------\\')
+    print(f'|                                                                 |')
+    print(f'|  {f"You eat {total_eaten} berries to heal your injuries!":^61}  |')
+    print(f'|                                                                 |')
+    print(f'\\-----------------------------------------------------------------/')
+
+    return player_HP, inventory
