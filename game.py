@@ -66,11 +66,13 @@ def main_game_loop():
             player_HP, player_gold, inventory, equipped, map_state = gamefunctions.explore(player_HP, player_gold, inventory, equipped, map_state)
         elif user_choice == 2: #Sleep and restore HP.
             player_HP, player_gold = gamefunctions.sleep(player_gold, player_HP)
-        elif user_choice == 3: #Visit the game shop.
+        elif user_choice == 3: #Eat Berries.
+            player_HP, inventory = gamefunctions.food(player_HP, inventory)
+        elif user_choice == 4: #Visit the game shop.
             player_gold, inventory = gamefunctions.visit_shop(player_gold, inventory, equipped)
-        elif user_choice == 4: #Manage player inventory.
+        elif user_choice == 5: #Manage player inventory.
             inventory, equipped = gamefunctions.manage_inventory(inventory, equipped)
-        elif user_choice == 5: #Quit the game.
+        elif user_choice == 6: #Quit the game.
             print(f'/------------------------------------------------\\')
             print(f'|                                                |')
             print(f'|            Your game has been saved!           |')
@@ -82,4 +84,4 @@ def main_game_loop():
 
 if __name__ == "__main__":
     main_game_loop()
-    
+
