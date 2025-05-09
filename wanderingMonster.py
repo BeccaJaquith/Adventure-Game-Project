@@ -133,3 +133,4 @@ class Monster():
         self.position = monster_dict["position"]
         self.color = monster_dict["color"]
         return self
+
